@@ -1,10 +1,53 @@
 ---
 
-import BaseLayout from "../layouts/BaseLayout.astro";
-
+import BaseLayout from '../layouts/BaseLayout.astro'
 ---
 
-<BaseLayout>
-    <h1>About</h1>
-    <a href="/user">User</a>
+<BaseLayout mainPadding={true}>
+	<h1 class="title">About</h1>
+	<div class="line" />
+
+	<section class="about-card" aria-labelledby="about-heading">
+		<h2 id="about-heading">Павловский Степан</h2>
+		<p>Я разработчик.</p>
+		<p>
+			Этот сайт место для ведения моих проектов и блога. Здесь я собираю
+			работы, фиксирую идеи и сохраняю заметки о процессе учебы и работы.
+		</p>
+		<p>
+			Это не учебное пособие. Его смысл - вести записи по моей учебе и проектам.
+		</p>
+	</section>
 </BaseLayout>
+
+<style>
+	.title {
+		font-size: 2rem;
+		font-weight: 700;
+	}
+
+	.line {
+		width: 100%;
+		height: 2px;
+		margin: 8px 0;
+		background: var(--color-text);
+	}
+
+	.about-card {
+		max-width: 48rem;
+		padding: var(--page-padding);
+		margin-top: 2rem;
+		background: var(--color-bg-3);
+		border: 2px solid var(--color-accent);
+		box-shadow: 3px 3px 0 var(--color-accent);
+	}
+
+	.about-card h2 {
+		margin: 0;
+	}
+
+	.about-card p {
+		max-width: 40rem;
+		margin: 1rem 0 0;
+	}
+</style>

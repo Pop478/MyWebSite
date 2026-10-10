@@ -1,0 +1,104 @@
+---
+
+import { getCollection } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import ArticleDate from '../../components/ArticleDate.astro'
+
+const blog = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+	(first, second) => second.data.pubDate.valueOf() - first.data.pubDate.valueOf(),
+)
+---
+
+<BaseLayout  mainPadding={true}>
+	<h1 class="title">Blog</h1>
+	<div class="line"/>
+
+	<ul class="blog-list">
+		{
+			blog.map((blog) => (
+				<li class="blog-card">
+					<a href={`${blog.id}`}>
+						<p class="date">
+						
+						</p>
+						<h2>{blog.data.title}</h2>
+						<p>{blog.data.description}</p>
+						<div class="blog-footer">
+							{blog.data.tags.length > 0 && (
+								<ul class="tags" aria-label="Article tags">
+									{blog.data.tags.map((tag) => <li>{tag}</li>)}
+								</ul>
+							)}	
+							<ArticleDate date={blog.data.pubDate} locale='en-Us'/>
+						</div>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</BaseLayout>
+
+<style>
+	.title {
+		font-size: 2rem;
+		font-weight: 700;
+	}
+
+	.line {
+		height: 2px;
+		background: var(--color-text);
+		width: 100%;
+		margin: 8px 0; 
+	}
+
+	.blog-list,
+	.tags {
+		padding: 0;
+		list-style: none;
+	}
+
+	.blog-list {
+		display: grid;
+		gap: 1.5rem;
+		margin-block: 2rem;
+	}
+
+	.blog-card {
+		padding: var(--page-padding);
+		background: var(--color-bg-3);
+		border: 2px solid var(--color-accent);
+		box-shadow: 3px 3px 0 var(--color-accent);
+		transition: 0.3s all ease;
+	}
+
+	.blog-card:hover {
+		transform: translate(3px);
+		box-shadow: 0 0 0 0;
+	}
+
+	.blog-list h2 {
+		margin-block: 0.25rem;
+	}
+
+	.blog-footer {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 1rem 0 0;
+	}
+
+	.tags li {
+		padding: 0.15rem 0.6rem;
+		color: var(--color-text);
+		background: var(--color-bg-2);
+		font-size: 0.85rem;
+	}
+</style>

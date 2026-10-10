@@ -1,60 +1,110 @@
 ---
 
 import { getCollection } from 'astro:content'
+import ArticleDate from '../components/ArticleDate.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
 
-const latestArticles = (await getCollection('articles', ({ data }) => !data.draft))
+const latestBlogPosts = (await getCollection('blog', ({ data }) => !data.draft))
 	.sort((first, second) => second.data.pubDate.valueOf() - first.data.pubDate.valueOf())
 	.slice(0, 3)
 
-const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
-	day: 'numeric',
-	month: 'short',
-	year: 'numeric',
-})
+const latestProjects = (await getCollection('projects', ({ data }) => !data.draft))
+	.sort(
+		(first, second) =>
+			Number(second.data.featured) - Number(first.data.featured) ||
+			second.data.pubDate.valueOf() - first.data.pubDate.valueOf(),
+	)
+	.slice(0, 3)
+
+const statusLabels = {
+	completed: 'Completed',
+	'in-progress': 'In progress',
+	concept: 'Concept',
+} as const
 ---
 
 <BaseLayout>
 	<section class="hero" aria-labelledby="hero-heading">
 		<p class="eyebrow">Personal website · 2026</p>
-		<h1 id="hero-heading">Привет, это <span>stepanusik.</span></h1>
+		<h1 id="hero-heading">Привет, это <span>stepanusik</span><span class="dot">.</span></h1>
 		<p class="hero-copy">
 			Личное пространство для заметок, идей и небольших экспериментов в вебе.
 		</p>
 		<div class="hero-actions">
-			<a class="button button-primary" href="/articles/">Читать статьи</a>
-			<a class="button button-secondary" href="/about/">О сайте</a>
+			<a class="button button-primary" href="/blog/">Читать блог</a>
+			<a class="button button-secondary" href="/projects/">Смотреть проекты</a>
 		</div>
 	</section>
 
-	<section class="latest" aria-labelledby="latest-heading">
+	<section class="content-section" aria-labelledby="blog-heading">
 		<div class="section-heading">
 			<div>
 				<p class="eyebrow">Latest notes</p>
-				<h2 id="latest-heading">Последние записи</h2>
+				<h2 id="blog-heading">Последние записи</h2>
 			</div>
-			<a class="text-link" href="/articles/">Все статьи <span aria-hidden="true">↗</span></a>
+			<a class="text-link" href="/blog/">Все записи <span aria-hidden="true">↗</span></a>
 		</div>
 
 		{
-			latestArticles.length > 0 ? (
-				<ul class="article-list">
-					{latestArticles.map((article) => (
-						<li>
-							<article>
-								<p class="article-meta">
-									{dateFormatter.format(article.data.pubDate)}
-								</p>
-								<h3>
-									<a href={`/articles/${article.id}/`}>{article.data.title}</a>
-								</h3>
-								<p>{article.data.description}</p>
-							</article>
+			latestBlogPosts.length > 0 ? (
+				<ul class="content-list">
+					{latestBlogPosts.map((post) => (
+						<li class="content-card">
+							<a href={`/blog/${post.id}/`}>
+								<h3>{post.data.title}</h3>
+								<p>{post.data.description}</p>
+								<div class="card-footer">
+									{post.data.tags.length > 0 && (
+										<ul class="tags" aria-label="Post tags">
+											{post.data.tags.map((tag) => <li>{tag}</li>)}
+										</ul>
+									)}
+									<ArticleDate date={post.data.pubDate} locale="en-US" />
+								</div>
+							</a>
 						</li>
 					))}
 				</ul>
 			) : (
-				<p>Новые записи появятся здесь совсем скоро.</p>
+				<p class="empty-state">Новые записи появятся здесь совсем скоро.</p>
+			)
+		}
+	</section>
+
+	<section class="content-section" aria-labelledby="projects-heading">
+		<div class="section-heading">
+			<div>
+				<p class="eyebrow">Selected work</p>
+				<h2 id="projects-heading">Проекты</h2>
+			</div>
+			<a class="text-link" href="/projects/">Все проекты <span aria-hidden="true">↗</span></a>
+		</div>
+
+		{
+			latestProjects.length > 0 ? (
+				<ul class="content-list">
+					{latestProjects.map((project) => (
+						<li class="content-card">
+							<a href={`/projects/${project.id}/`}>
+								<p class="card-meta">
+									{project.data.category} · {statusLabels[project.data.status]}
+								</p>
+								<h3>{project.data.title}</h3>
+								<p>{project.data.description}</p>
+								<div class="card-footer">
+									{project.data.technologies.length > 0 && (
+										<ul class="tags" aria-label="Technologies and materials">
+											{project.data.technologies.map((technology) => <li>{technology}</li>)}
+										</ul>
+									)}
+									<ArticleDate date={project.data.pubDate} locale="en-US" />
+								</div>
+							</a>
+						</li>
+					))}
+				</ul>
+			) : (
+				<p class="empty-state">Опубликованные проекты появятся здесь совсем скоро.</p>
 			)
 		}
 	</section>
@@ -66,7 +116,7 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
 	}
 
 	.hero,
-	.latest {
+	.content-section {
 		padding: clamp(2.5rem, 7vw, 7rem) var(--page-padding);
 	}
 
@@ -79,18 +129,22 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
 	}
 
 	.hero > *,
-	.latest > * {
+	.content-section > * {
 		width: min(100%, var(--container-width));
 		margin-inline: auto;
 	}
 
-	.eyebrow {
-		margin: 0 0 1.25rem;
+	.eyebrow,
+	.card-meta {
 		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
+	}
+
+	.eyebrow {
+		margin: 0 0 1.25rem;
 	}
 
 	h1 {
@@ -103,6 +157,11 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
 	h1 span {
 		color: var(--color-white);
 		-webkit-text-stroke: 1px var(--color-text);
+	}
+
+	h1 .dot {
+		color: var(--color-accent);
+		-webkit-text-stroke: 0;
 	}
 
 	.hero-copy {
@@ -142,7 +201,7 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
 		background: var(--color-text);
 	}
 
-	.latest {
+	.content-section {
 		background: var(--color-bg-2);
 	}
 
@@ -169,72 +228,93 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
 		font-weight: 700;
 	}
 
-	.article-list {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+	.content-list,
+	.tags {
 		padding: 0;
-		margin-block: 0;
-		border-top: 1px solid var(--color-text);
+		margin: 0;
 		list-style: none;
 	}
 
-	.article-list li {
-		border-right: 1px solid var(--color-text);
-		border-bottom: 1px solid var(--color-text);
+	.content-list {
+		display: grid;
+		gap: 1.5rem;
 	}
 
-	.article-list li:first-child {
-		border-left: 1px solid var(--color-text);
-	}
-
-	.article-list article {
-		height: 100%;
-		padding: 1.5rem;
+	.content-card,
+	.empty-state {
+		padding: var(--page-padding);
 		background: var(--color-bg-3);
+		border: 2px solid var(--color-accent);
+		box-shadow: 3px 3px 0 var(--color-accent);
 	}
 
-	.article-meta {
+	.content-card {
+		transition: 0.3s all ease;
+	}
+
+	.content-card:hover {
+		transform: translate(3px);
+		box-shadow: 0 0 0 0;
+	}
+
+	.content-card a {
+		display: block;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.card-meta {
 		margin: 0;
 		color: var(--color-muted);
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
 	}
 
 	h3 {
-		margin: 3rem 0 0.75rem;
+		margin: 0.25rem 0;
 		font-size: 1.5rem;
 		letter-spacing: -0.03em;
 	}
 
-	h3 a {
-		text-decoration-thickness: 0.08em;
-		text-underline-offset: 0.15em;
+	.content-card h3 + p {
+		margin: 0.75rem 0 0;
 	}
 
-	.article-list article > p:last-child {
-		margin-bottom: 0;
-		color: var(--color-muted);
+	.card-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.tags li {
+		padding: 0.15rem 0.6rem;
+		color: var(--color-text);
+		background: var(--color-bg-2);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+	}
+
+	.empty-state {
+		margin: 0;
 	}
 
 	@media (max-width: 48rem) {
-		.section-heading {
-			align-items: start;
+		.section-heading,
+		.card-footer {
+			align-items: flex-start;
 			flex-direction: column;
-		}
-
-		.article-list {
-			grid-template-columns: 1fr;
-		}
-
-		.article-list li,
-		.article-list li:first-child {
-			border-right: 1px solid var(--color-text);
-			border-left: 1px solid var(--color-text);
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.button {
+		.button,
+		.content-card {
 			transition: none;
 		}
 

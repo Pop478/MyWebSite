@@ -1,0 +1,166 @@
+---
+
+import { getCollection } from 'astro:content'
+import ArticleDate from '../../components/ArticleDate.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+	(first, second) =>
+		Number(second.data.featured) - Number(first.data.featured) ||
+		second.data.pubDate.valueOf() - first.data.pubDate.valueOf(),
+)
+
+const statusLabels = {
+	completed: 'Completed',
+	'in-progress': 'In progress',
+	concept: 'Concept',
+} as const
+---
+
+<BaseLayout mainPadding={true}>
+	<h1 class="title">Projects</h1>
+	<div class="line" />
+
+	{
+		projects.length > 0 ? (
+			<ul class="project-list">
+				{projects.map((project) => (
+					<li class="project-card">
+						<a href={`/projects/${project.id}/`}>
+							<p class="project-meta">
+								{project.data.category} · {statusLabels[project.data.status]}
+							</p>
+							<h2>{project.data.title}</h2>
+							<p>{project.data.description}</p>
+							<div class="project-footer">
+								{project.data.technologies.length > 0 && (
+									<ul class="technologies" aria-label="Technologies and materials">
+										{project.data.technologies.map((technology) => <li>{technology}</li>)}
+									</ul>
+								)}
+								<ArticleDate date={project.data.pubDate} locale="en-US" />
+							</div>
+						</a>
+					</li>
+				))}
+			</ul>
+		) : (
+			<section class="empty-state" aria-labelledby="empty-heading">
+				<h2 id="empty-heading">No projects published yet.</h2>
+				<p>New work will appear here soon.</p>
+			</section>
+		)
+	}
+</BaseLayout>
+
+<style>
+	.title {
+		font-size: 2rem;
+		font-weight: 700;
+	}
+
+	.line {
+		width: 100%;
+		height: 2px;
+		margin: 8px 0;
+		background: var(--color-text);
+	}
+
+	.project-list,
+	.technologies {
+		padding: 0;
+		list-style: none;
+	}
+
+	.project-list {
+		display: grid;
+		gap: 1.5rem;
+		margin-block: 2rem;
+	}
+
+	.project-card {
+		padding: var(--page-padding);
+		background: var(--color-bg-3);
+		border: 2px solid var(--color-accent);
+		box-shadow: 3px 3px 0 var(--color-accent);
+		transition: 0.3s all ease;
+	}
+
+	.project-card:hover {
+		transform: translate(3px);
+		box-shadow: 0 0 0 0;
+	}
+
+	.project-card a {
+		display: block;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.project-meta {
+		margin: 0;
+		color: var(--color-muted);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.project-list h2 {
+		margin-block: 0.25rem;
+	}
+
+	.project-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	.technologies {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 0;
+	}
+
+	.technologies li {
+		padding: 0.15rem 0.6rem;
+		color: var(--color-text);
+		background: var(--color-bg-2);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+	}
+
+	.empty-state {
+		padding: var(--page-padding);
+		margin-top: 2rem;
+		background: var(--color-bg-3);
+		border: 2px solid var(--color-accent);
+		box-shadow: 3px 3px 0 var(--color-accent);
+	}
+
+	.empty-state h2,
+	.empty-state p {
+		margin: 0;
+	}
+
+	.empty-state p {
+		margin-top: 0.5rem;
+		color: var(--color-muted);
+	}
+
+	@media (max-width: 36rem) {
+		.project-footer {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.project-card {
+			transition: none;
+		}
+	}
+</style>

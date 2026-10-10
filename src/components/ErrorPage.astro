@@ -1,62 +1,97 @@
 ---
 interface Props {
-	actionHref: string;
-	actionLabel: string;
-	code: 404 | 500;
-	description: string;
-	heading: string;
+	actionHref: string
+	actionLabel: string
+	code: 404 | 500
+	description: string
+	heading: string
 }
 
-const { actionHref, actionLabel, code, description, heading } = Astro.props;
+const { actionHref, actionLabel, code, description, heading } = Astro.props
 ---
 
 <section class="error-page" aria-labelledby="error-heading">
-	<p class="code" aria-hidden="true">{code}</p>
-	<h1 id="error-heading">{heading}</h1>
-	<p class="description">{description}</p>
-	<a class="action" href={actionHref}>{actionLabel}</a>
+	<header class="error-header">
+		<p class="error-code" aria-hidden="true">Error {code}</p>
+		<h1 id="error-heading" class="title">{heading}</h1>
+		<div class="line" />
+	</header>
+
+	<div class="error-card">
+		<p>{description}</p>
+		<a class="action" href={actionHref}>{actionLabel}</a>
+	</div>
 </section>
 
 <style>
 	.error-page {
-		display: grid;
-		justify-items: start;
-		max-width: 42rem;
-		padding: clamp(2rem, 8vw, 5rem) 0;
+		max-width: 48rem;
+		padding: var(--page-padding);
+		margin-inline: auto;
 	}
 
-	.code {
+	.error-code {
+		margin: 0 0 0.5rem;
+		color: var(--color-muted);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.title {
 		margin: 0;
-		color: #0f766e;
-		font-size: clamp(4rem, 18vw, 9rem);
-		font-weight: 800;
-		line-height: 1;
+		font-size: 2rem;
+		font-weight: 700;
 	}
 
-	h1 {
-		margin: 1rem 0 0;
-		font-size: clamp(2rem, 5vw, 3.5rem);
-		line-height: 1.15;
+	.line {
+		width: 100%;
+		height: 2px;
+		margin: 8px 0;
+		background: var(--color-text);
 	}
 
-	.description {
+	.error-card {
+		padding: var(--page-padding);
+		margin-top: 2rem;
+		background: var(--color-bg-3);
+		border: 2px solid var(--color-accent);
+		box-shadow: 3px 3px 0 var(--color-accent);
+	}
+
+	.error-card p {
 		max-width: 38rem;
-		margin: 1rem 0 2rem;
-		color: #52606d;
-		font-size: 1.125rem;
+		margin: 0;
 	}
 
 	.action {
-		padding: 0.7rem 1rem;
-		color: white;
-		background: #0f766e;
-		border-radius: 0.5rem;
+		display: inline-block;
+		padding: 0.5rem 0.75rem;
+		margin-top: 1.5rem;
+		color: var(--color-text);
+		background: var(--color-bg-2);
+		border: 1px solid var(--color-text);
+		box-shadow: 2px 2px 0 var(--color-text);
 		font-weight: 700;
 		text-decoration: none;
+		transition: 0.2s all ease;
 	}
 
 	.action:hover,
 	.action:focus-visible {
-		background: #115e59;
+		transform: translate(2px, 2px);
+		box-shadow: 0 0 0 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.action {
+			transition: none;
+		}
+
+		.action:hover,
+		.action:focus-visible {
+			transform: none;
+		}
 	}
 </style>

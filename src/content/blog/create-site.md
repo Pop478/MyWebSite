@@ -1,10 +1,10 @@
 ---
-title: 'Static sites that stay simple'
+title: 'Create my web cite with astro'
 description: 'How a small amount of structure helps a website remain easy to extend.'
-pubDate: 2026-10-08
+pubDate: 2026-10-10
 tags:
-  - astro
-  - web-development
+    - astro
+    - web-development
 ---
 
 # Static sites that stay simple

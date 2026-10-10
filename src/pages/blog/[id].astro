@@ -1,10 +1,11 @@
 ---
 
 import { getCollection, render, type CollectionEntry } from 'astro:content'
+import ArticleDate from '../../components/ArticleDate.astro'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 
 export async function getStaticPaths() {
-	const articles = await getCollection('articles', ({ data }) => !data.draft)
+	const articles = await getCollection('blog', ({ data }) => !data.draft)
 
 	return articles.map((article) => ({
 		params: { id: article.id },
@@ -13,7 +14,7 @@ export async function getStaticPaths() {
 }
 
 interface Props {
-	article: CollectionEntry<'articles'>
+	article: CollectionEntry<'blog'>
 }
 
 const { article } = Astro.props
@@ -24,19 +25,13 @@ const { Content } = await render(article)
 	<article>
 		<header>
 			<p>
-				<time datetime={article.data.pubDate.toISOString()}>
-					{article.data.pubDate.toLocaleDateString('en-US', {
-						day: 'numeric',
-						month: 'long',
-						year: 'numeric',
-					})}
-				</time>
+				<ArticleDate date={article.data.pubDate} />
 			</p>
 			<h1>{article.data.title}</h1>
 			<p class="lead">{article.data.description}</p>
 		</header>
 		<Content />
-		<p><a href="/articles/">← Back to articles</a></p>
+		<p><a href="/blog/">← Back to blog</a></p>
 	</article>
 </BaseLayout>
 

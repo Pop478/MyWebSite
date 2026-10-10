@@ -1,83 +1,386 @@
+
 ---
+import { ClientRouter } from "astro:transitions";
+import "../styles/global.css";
 
-import { ClientRouter } from 'astro:transitions'
-import '../styles/global.css'
+import LogoIcon from "../assets/logo.svg";
+import YoutubeImg from "../assets/youtube.svg";
+import TikTokImg from "../assets/tiktok.svg";
+import TelegramImg from "../assets/telegram.svg";
+import LinkedInImg from "../assets/linkedin.svg";
+import InstagramImg from "../assets/instagram.svg";
+import GitHubImg from "../assets/github.svg";
 
+interface Props {
+  mainPadding?: boolean;
+}
+
+const {
+  mainPadding = false,
+} = Astro.props;
+
+const pathname = Astro.url.pathname;
+
+const links = [
+    { href: "/", label: "Home" },
+    { href: "/blog/", label: "Blog" },
+    { href: "/projects/", label: "Projects" },
+    { href: "/about/", label: "About" },
+];
+
+const normalizePath = (path: string) =>
+  path.replace(/\/+$/, "") || "/";
+
+const isActive = (href: string) =>
+  normalizePath(pathname) === normalizePath(href);
+
+const isHome = isActive("/");
 ---
 
 <html lang="en" transition:name="root" transition:animate="none">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content='Personal website with notes, ideas, and web experiments.' />
-		<title>Stepanusik</title>
-		<ClientRouter />
-	</head>
-	<body>
-		<header>
-			<nav aria-label="Main navigation">
-				<a href="/">Stepanusik</a>
-				<ul>
-					<li><a href="/articles/">Articles</a></li>
-					<li><a href="/about/">About</a></li>
-				</ul>
-			</nav>
-		</header>
-		<main transition:animate="slide">
-			<slot />
-		</main>
-        <footer>
-            <nav>
-				<ul>
-					<li><a href="/articles/">Articles</a></li>
-					<li><a href="/about/">About</a></li>
-				</ul>
-			</nav>
-        </footer>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta
+      name="description"
+      content="Personal website with notes, ideas, and web experiments."
+    />
+    <title>Stepanusik</title>
+    <ClientRouter />
+  </head>
+
+  <body>
+    <header>
+      <nav aria-label="Main navigation">
+        {
+          isHome ? (
+            <span class="logo-link active" aria-current="page">
+              <img
+                src={LogoIcon.src}
+                alt="Stepanusik"
+                class="logo-img"
+              />
+            </span>
+          ) : (
+            <a href="/" class="logo-link">
+              <img
+                src={LogoIcon.src}
+                alt="Stepanusik — Home"
+                class="logo-img"
+              />
+            </a>
+          )
+        }
+
+        <ul>
+          {links
+            .filter((link) => link.href !== "/")
+            .map((link) => (
+              <li>
+                {isActive(link.href) ? (
+                  <span class="nav-link active" aria-current="page">
+                    {link.label}
+                  </span>
+                ) : (
+                  <a href={link.href} class="nav-link">
+                    {link.label}
+                  </a>
+                )}
+              </li>
+            ))}
+        </ul>
+      </nav>
+    </header>
+
+    <main transition:animate="slide" class:list={{ "main-padding": mainPadding }}>
+      <slot />
+    </main>
+
+    <footer>
+        <div class="footer-top">
+            <img
+                src={LogoIcon.src}
+                alt="Stepanusik"
+                class="logo-img"
+            />
+            <div class="footer-links">
+            <div class="footer-column">
+                <span class="column-title">01 / NAVIGATION</span>
+                <a href="/">Home</a>
+                <a href="/blog/">Blog</a>
+                <a href="/projects/">Projects</a>
+                <a href="/about/">About</a>
+            </div>
+
+   
+            </div>
+        </div>
+
+        <div class="footer-social">
+          <a
+            href="https://www.youtube.com/@Stepazavrik"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon"
+            aria-label="YouTube"
+          >
+            <img src={YoutubeImg.src} alt="" />
+          </a>
+
+          <a
+            href="https://www.tiktok.com/@vwaifu_ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon"
+            aria-label="TikTok"
+          >
+            <img src={TikTokImg.src} alt="" />
+          </a>
+
+          <a
+            href="https://t.me/Stepanusik"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon"
+            aria-label="Telegram"
+          >
+            <img src={TelegramImg.src} alt="" />
+          </a>
+
+          <a
+            href="https://www.linkedin.com/in/степан-павловский-55b210395"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon"
+            aria-label="LinkedIn"
+          >
+            <img src={LinkedInImg.src} alt="" />
+          </a>
+
+          <a
+            href="https://www.instagram.com/stepa_nusik"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon"
+            aria-label="Instagram"
+          >
+            <img src={InstagramImg.src} alt="" />
+          </a>
+
+          <a
+            href="https://github.com/Pop478"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon"
+            aria-label="GitHub"
+          >
+            <img src={GitHubImg.src} alt="" />
+          </a>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© {new Date().getFullYear()} STEPANUSIK</span>
+            <span>BUILT WITH ASTRO ↗</span>
+        </div>
+    </footer>
+  </body>
 </html>
 
-
 <style>
-	header,
-	main {
-		/* width: min(100% - 2rem, 72rem);
-		margin-inline: auto; */
-	}
+  :global(html) {
+    min-height: 100%;
+  }
 
-	header {
-        padding: var(--page-padding);
-        border-bottom: 1px solid var(--color-text);
-        background: var(--color-bg);
-	}
+  :global(body) {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
 
-    footer {
+  header {
+    padding: var(--page-padding);
+    border-bottom: 1px solid var(--color-text);
+    background: var(--color-bg);
+  }
+
+  .logo-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo-img {
+    display: block;
+    width: 100px;
+    height: auto;
+  }
+
+  nav,
+  nav ul {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  nav {
+    justify-content: space-between;
+  }
+
+  nav ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  li {
+    font-family: "Golos Text", sans-serif;
+    font-weight: 700;
+  }
+
+  .nav-link {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  a.nav-link:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-link.active {
+    color: var(--color-accent);
+    font-weight: 700;
+    cursor: default;
+  }
+
+  main {
+    flex: 1;
+    min-height: 0;
+  }
+
+    main.main-padding {
         padding: var(--page-padding);
-        border-bottom: 1px solid var(--color-text);
-        background: var(--color-bg);
     }
 
-	nav,
-	nav ul {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
+  footer {
+    padding: var(--page-padding);
+    border-top: 2px solid var(--color-text);
+    background: var(--color-bg);
+  }
 
-	nav {
-		justify-content: space-between;
-	}
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 8px;
+  }
 
-	nav ul {
-		padding: 0;
-		margin: 0;
-		list-style: none;
-	}
+  .footer-logo {
+    font-family: "Golos Text", sans-serif;
+    font-size: clamp(32px, 5vw, 64px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: var(--color-text);
+    text-decoration: none;
+  }
 
-	main {
-		/* padding-block: 2rem 4rem; */
-	}
+  .footer-logo span {
+    color: var(--color-accent);
+  }
+
+
+  .footer-links {
+    display: flex;
+    gap: clamp(32px, 5vw, 96px);
+  }
+
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .column-title {
+    margin-bottom: 6px;
+    color: var(--color-accent);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+  }
+
+  .footer-column a {
+    color: var(--color-text);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .footer-column a:hover {
+    color: var(--color-accent);
+  }
+
+
+  .footer-social {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 8px;
+  }
+
+  .social-icon {
+    height: 2rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-bg-2);
+
+    text-decoration: none;
+    transition:
+      transform 0.2s ease;
+  }
+
+  .social-icon img {
+    height: 2rem;
+  }
+
+  .social-icon:hover {
+    transform: translateY(-2px);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-text);
+    color: var(--color-text);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+  }
+
+  @media (max-width: 640px) {
+    .footer-top {
+      flex-direction: column;
+      gap: 40px;
+      padding-bottom: 48px;
+    }
+
+    .footer-links {
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+    }
+  }
 </style>
