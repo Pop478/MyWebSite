@@ -1,17 +1,8 @@
 ---
 
 import { ClientRouter } from 'astro:transitions'
-import "../styles/global.css";
+import '../styles/global.css'
 
-interface Props {
-	description?: string;
-	title?: string;
-}
-
-const {
-	description = 'Articles and notes about building with Astro.',
-	title = 'My Website',
-} = Astro.props;
 ---
 
 <html lang="en" transition:name="root" transition:animate="none">
@@ -21,14 +12,14 @@ const {
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content={description} />
-		<title>{title}</title>
+		<meta name="description" content='Personal website with notes, ideas, and web experiments.' />
+		<title>Stepanusik</title>
 		<ClientRouter />
 	</head>
 	<body>
 		<header>
 			<nav aria-label="Main navigation">
-				<a href="/">My Website</a>
+				<a href="/">Stepanusik</a>
 				<ul>
 					<li><a href="/articles/">Articles</a></li>
 					<li><a href="/about/">About</a></li>
@@ -38,6 +29,14 @@ const {
 		<main transition:animate="slide">
 			<slot />
 		</main>
+        <footer>
+            <nav>
+				<ul>
+					<li><a href="/articles/">Articles</a></li>
+					<li><a href="/about/">About</a></li>
+				</ul>
+			</nav>
+        </footer>
 	</body>
 </html>
 
@@ -51,9 +50,15 @@ const {
 
 	header {
         padding: var(--page-padding);
-        border-bottom: 1px solid var(--Divider, #000);
+        border-bottom: 1px solid var(--color-text);
         background: var(--color-bg);
 	}
+
+    footer {
+        padding: var(--page-padding);
+        border-bottom: 1px solid var(--color-text);
+        background: var(--color-bg);
+    }
 
 	nav,
 	nav ul {
@@ -73,6 +78,6 @@ const {
 	}
 
 	main {
-		padding-block: 2rem 4rem;
+		/* padding-block: 2rem 4rem; */
 	}
 </style>

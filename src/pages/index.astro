@@ -1,9 +1,246 @@
 ---
 
+import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
 
+const latestArticles = (await getCollection('articles', ({ data }) => !data.draft))
+	.sort((first, second) => second.data.pubDate.valueOf() - first.data.pubDate.valueOf())
+	.slice(0, 3)
+
+const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
+	day: 'numeric',
+	month: 'short',
+	year: 'numeric',
+})
 ---
 
 <BaseLayout>
-	<h1>Astro</h1>
+	<section class="hero" aria-labelledby="hero-heading">
+		<p class="eyebrow">Personal website · 2026</p>
+		<h1 id="hero-heading">Привет, это <span>stepanusik.</span></h1>
+		<p class="hero-copy">
+			Личное пространство для заметок, идей и небольших экспериментов в вебе.
+		</p>
+		<div class="hero-actions">
+			<a class="button button-primary" href="/articles/">Читать статьи</a>
+			<a class="button button-secondary" href="/about/">О сайте</a>
+		</div>
+	</section>
+
+	<section class="latest" aria-labelledby="latest-heading">
+		<div class="section-heading">
+			<div>
+				<p class="eyebrow">Latest notes</p>
+				<h2 id="latest-heading">Последние записи</h2>
+			</div>
+			<a class="text-link" href="/articles/">Все статьи <span aria-hidden="true">↗</span></a>
+		</div>
+
+		{
+			latestArticles.length > 0 ? (
+				<ul class="article-list">
+					{latestArticles.map((article) => (
+						<li>
+							<article>
+								<p class="article-meta">
+									{dateFormatter.format(article.data.pubDate)}
+								</p>
+								<h3>
+									<a href={`/articles/${article.id}/`}>{article.data.title}</a>
+								</h3>
+								<p>{article.data.description}</p>
+							</article>
+						</li>
+					))}
+				</ul>
+			) : (
+				<p>Новые записи появятся здесь совсем скоро.</p>
+			)
+		}
+	</section>
 </BaseLayout>
+
+<style>
+	:global(main) {
+		padding: 0;
+	}
+
+	.hero,
+	.latest {
+		padding: clamp(2.5rem, 7vw, 7rem) var(--page-padding);
+	}
+
+	.hero {
+		min-height: min(42rem, calc(100svh - 4.5rem));
+		display: grid;
+		align-content: center;
+		background: var(--color-bg);
+		border-bottom: 1px solid var(--color-text);
+	}
+
+	.hero > *,
+	.latest > * {
+		width: min(100%, var(--container-width));
+		margin-inline: auto;
+	}
+
+	.eyebrow {
+		margin: 0 0 1.25rem;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	h1 {
+		max-width: 14ch;
+		margin: 0;
+		font-size: clamp(3.25rem, 10vw, 8rem);
+		letter-spacing: -0.07em;
+	}
+
+	h1 span {
+		color: var(--color-white);
+		-webkit-text-stroke: 1px var(--color-text);
+	}
+
+	.hero-copy {
+		max-width: 38rem;
+		margin: 2rem 0 0;
+		font-size: clamp(1.125rem, 2vw, 1.4rem);
+	}
+
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2rem;
+	}
+
+	.button {
+		padding: 0.75rem 1rem;
+		border: 1px solid var(--color-text);
+		font-weight: 700;
+		text-decoration: none;
+		transition: transform 150ms ease, background-color 150ms ease, color 150ms ease;
+	}
+
+	.button:hover,
+	.button:focus-visible {
+		transform: translate(-0.2rem, -0.2rem);
+		box-shadow: 0.25rem 0.25rem 0 var(--color-text);
+	}
+
+	.button-primary {
+		color: var(--color-text);
+		background: var(--color-white);
+	}
+
+	.button-secondary {
+		color: var(--color-white);
+		background: var(--color-text);
+	}
+
+	.latest {
+		background: var(--color-bg-2);
+	}
+
+	.section-heading {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 2.5rem;
+	}
+
+	.section-heading .eyebrow {
+		margin-bottom: 0.5rem;
+	}
+
+	h2 {
+		margin: 0;
+		font-size: clamp(2rem, 5vw, 4rem);
+		letter-spacing: -0.05em;
+	}
+
+	.text-link {
+		flex: 0 0 auto;
+		font-weight: 700;
+	}
+
+	.article-list {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		padding: 0;
+		margin-block: 0;
+		border-top: 1px solid var(--color-text);
+		list-style: none;
+	}
+
+	.article-list li {
+		border-right: 1px solid var(--color-text);
+		border-bottom: 1px solid var(--color-text);
+	}
+
+	.article-list li:first-child {
+		border-left: 1px solid var(--color-text);
+	}
+
+	.article-list article {
+		height: 100%;
+		padding: 1.5rem;
+		background: var(--color-bg-3);
+	}
+
+	.article-meta {
+		margin: 0;
+		color: var(--color-muted);
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+	}
+
+	h3 {
+		margin: 3rem 0 0.75rem;
+		font-size: 1.5rem;
+		letter-spacing: -0.03em;
+	}
+
+	h3 a {
+		text-decoration-thickness: 0.08em;
+		text-underline-offset: 0.15em;
+	}
+
+	.article-list article > p:last-child {
+		margin-bottom: 0;
+		color: var(--color-muted);
+	}
+
+	@media (max-width: 48rem) {
+		.section-heading {
+			align-items: start;
+			flex-direction: column;
+		}
+
+		.article-list {
+			grid-template-columns: 1fr;
+		}
+
+		.article-list li,
+		.article-list li:first-child {
+			border-right: 1px solid var(--color-text);
+			border-left: 1px solid var(--color-text);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.button {
+			transition: none;
+		}
+
+		.button:hover,
+		.button:focus-visible {
+			transform: none;
+		}
+	}
+</style>
