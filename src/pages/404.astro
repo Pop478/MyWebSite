@@ -1,0 +1,18 @@
+---
+
+import ErrorPage from '../components/ErrorPage.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout
+	title="Page not found | My Website"
+	description="The requested page could not be found."
+>
+	<ErrorPage
+		code={404}
+		heading="Page not found"
+		description="The address may be incorrect, or the page may have moved."
+		actionHref="/"
+		actionLabel="Go to the homepage"
+	/>
+</BaseLayout>

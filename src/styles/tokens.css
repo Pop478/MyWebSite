@@ -1,0 +1,20 @@
+:root {
+    /* Colors */
+    --color-bg: #808cfd;
+    --color-bg-2: #e9ecff;
+    --color-bg-3: #ffffff;
+    --color-text: #000000;
+    --color-white: #ffffff;
+    --color-accent: #808dfd;
+    --color-muted: #777b73;
+    --color-border: #d6d4cb;
+
+    /* Typography */
+    --font-body: 'Geist Mono', sans-serif;
+    --font-heading: 'Golos Text', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+
+    /* Layout */
+    --container-width: 1280px;
+    --page-padding: 20px;
+}

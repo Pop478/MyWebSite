@@ -1,0 +1,78 @@
+---
+
+import { ClientRouter } from 'astro:transitions'
+import "../styles/global.css";
+
+interface Props {
+	description?: string;
+	title?: string;
+}
+
+const {
+	description = 'Articles and notes about building with Astro.',
+	title = 'My Website',
+} = Astro.props;
+---
+
+<html lang="en" transition:name="root" transition:animate="none">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<title>{title}</title>
+		<ClientRouter />
+	</head>
+	<body>
+		<header>
+			<nav aria-label="Main navigation">
+				<a href="/">My Website</a>
+				<ul>
+					<li><a href="/articles/">Articles</a></li>
+					<li><a href="/about/">About</a></li>
+				</ul>
+			</nav>
+		</header>
+		<main transition:animate="slide">
+			<slot />
+		</main>
+	</body>
+</html>
+
+
+<style>
+	header,
+	main {
+		/* width: min(100% - 2rem, 72rem);
+		margin-inline: auto; */
+	}
+
+	header {
+        padding: var(--page-padding);
+        border-bottom: 1px solid var(--Divider, #000);
+        background: var(--color-bg);
+	}
+
+	nav,
+	nav ul {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	nav {
+		justify-content: space-between;
+	}
+
+	nav ul {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+	}
+
+	main {
+		padding-block: 2rem 4rem;
+	}
+</style>

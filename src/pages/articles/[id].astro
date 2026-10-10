@@ -1,0 +1,66 @@
+---
+
+import { getCollection, render, type CollectionEntry } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+export async function getStaticPaths() {
+	const articles = await getCollection('articles', ({ data }) => !data.draft)
+
+	return articles.map((article) => ({
+		params: { id: article.id },
+		props: { article },
+	}))
+}
+
+interface Props {
+	article: CollectionEntry<'articles'>
+}
+
+const { article } = Astro.props
+const { Content } = await render(article)
+---
+
+<BaseLayout title={`${article.data.title} | My Website`} description={article.data.description}>
+	<article>
+		<header>
+			<p>
+				<time datetime={article.data.pubDate.toISOString()}>
+					{article.data.pubDate.toLocaleDateString('en-US', {
+						day: 'numeric',
+						month: 'long',
+						year: 'numeric',
+					})}
+				</time>
+			</p>
+			<h1>{article.data.title}</h1>
+			<p class="lead">{article.data.description}</p>
+		</header>
+		<Content />
+		<p><a href="/articles/">← Back to articles</a></p>
+	</article>
+</BaseLayout>
+
+<style>
+	article {
+		max-width: 48rem;
+	}
+
+	header p:first-child {
+		margin: 0;
+		color: #52606d;
+	}
+
+	h1 {
+		margin-block: 0.25rem;
+		line-height: 1.2;
+	}
+
+	.lead {
+		color: #52606d;
+		font-size: 1.2rem;
+	}
+
+	article :global(h2) {
+		margin-top: 2rem;
+	}
+</style>

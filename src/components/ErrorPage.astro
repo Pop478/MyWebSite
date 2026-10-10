@@ -1,0 +1,62 @@
+---
+interface Props {
+	actionHref: string;
+	actionLabel: string;
+	code: 404 | 500;
+	description: string;
+	heading: string;
+}
+
+const { actionHref, actionLabel, code, description, heading } = Astro.props;
+---
+
+<section class="error-page" aria-labelledby="error-heading">
+	<p class="code" aria-hidden="true">{code}</p>
+	<h1 id="error-heading">{heading}</h1>
+	<p class="description">{description}</p>
+	<a class="action" href={actionHref}>{actionLabel}</a>
+</section>
+
+<style>
+	.error-page {
+		display: grid;
+		justify-items: start;
+		max-width: 42rem;
+		padding: clamp(2rem, 8vw, 5rem) 0;
+	}
+
+	.code {
+		margin: 0;
+		color: #0f766e;
+		font-size: clamp(4rem, 18vw, 9rem);
+		font-weight: 800;
+		line-height: 1;
+	}
+
+	h1 {
+		margin: 1rem 0 0;
+		font-size: clamp(2rem, 5vw, 3.5rem);
+		line-height: 1.15;
+	}
+
+	.description {
+		max-width: 38rem;
+		margin: 1rem 0 2rem;
+		color: #52606d;
+		font-size: 1.125rem;
+	}
+
+	.action {
+		padding: 0.7rem 1rem;
+		color: white;
+		background: #0f766e;
+		border-radius: 0.5rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.action:hover,
+	.action:focus-visible {
+		background: #115e59;
+	}
+</style>

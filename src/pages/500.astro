@@ -1,0 +1,24 @@
+---
+
+import ErrorPage from '../components/ErrorPage.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+
+interface Props {
+	error?: unknown;
+}
+
+const { error } = Astro.props
+const description = error instanceof Error
+	? 'We could not complete this request. Please try again in a moment.'
+	: 'Something went wrong while loading this page. Please try again in a moment.';
+---
+
+<BaseLayout title="Temporary problem | My Website" description="An unexpected server error occurred.">
+	<ErrorPage
+		code={500}
+		heading="Something went wrong"
+		description={description}
+		actionHref="/"
+		actionLabel="Return to the homepage"
+	/>
+</BaseLayout>
